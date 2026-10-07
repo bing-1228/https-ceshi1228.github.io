@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>职业人格测试 · 找到适合你的工作方式</title>
+<style>
+:root{color-scheme:light;--ink:#203b35;--muted:#60756e;--green:#216653;--paper:#fffdf8;--line:#dce4db}*{box-sizing:border-box}body{margin:0;background:#eef2e9;color:var(--ink);font:16px/1.7 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}button,textarea{font:inherit}button{cursor:pointer;min-height:48px;border-radius:12px;border:1px solid var(--line);padding:11px 19px;background:white;color:var(--ink)}button:hover{border-color:var(--green);background:#edf5ed}button:focus-visible,textarea:focus-visible{outline:3px solid #d2a451;outline-offset:3px}button:disabled{opacity:.4;cursor:default}.primary{background:var(--green);color:white;border-color:var(--green)}.primary:hover{background:#184e40}header{max-width:900px;margin:auto;padding:24px;display:flex;justify-content:space-between;align-items:center;gap:15px}header strong{letter-spacing:.05em}header button{font-size:13px;min-height:44px;padding:8px 12px;background:transparent}main{max-width:800px;margin:14px auto 60px;padding:0 20px}.card{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:38px;box-shadow:0 12px 45px #263c2810}.eyebrow{font-size:13px;letter-spacing:.13em;color:var(--green);font-weight:700}h1{font-size:clamp(30px,6vw,46px);line-height:1.3;margin:17px 0}h2{font-size:24px;line-height:1.5;margin:20px 0}p{margin:12px 0}.muted{color:var(--muted)}.pills{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}.pills span{background:#edf2e7;padding:6px 13px;border-radius:30px;font-size:14px}.note{background:#f1f4ec;border-radius:13px;padding:16px;font-size:14px;color:var(--muted);margin:24px 0}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.actions button{flex:1}.progress-head{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:9px}progress{width:100%;height:9px;accent-color:var(--green)}.options{display:grid;gap:12px;margin-top:25px}.option{text-align:left;display:flex;align-items:center;gap:14px;width:100%;padding:16px}.option .letter{border-radius:50%;background:#eef2e9;min-width:32px;text-align:center}.option[aria-pressed=true]{border:2px solid var(--green);background:#eaf3e8}.option[aria-pressed=true] .letter{background:var(--green);color:white}.result{padding:22px 0;border-bottom:1px solid var(--line)}.result-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.score{font-size:24px;font-weight:750}.track{height:9px;border-radius:20px;background:#e3e9df;margin:12px 0;overflow:hidden}.fill{height:100%;background:var(--green)}.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.result h3{margin:0;font-size:19px}.result p{font-size:15px}.badge{font-size:13px;color:var(--green)}#status{max-width:800px;margin:0 auto 15px;padding:0 24px;font-size:14px;color:var(--green)}textarea{width:100%;min-height:260px;margin-top:15px;padding:12px;border:1px solid var(--line);border-radius:12px}footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px}[hidden]{display:none!important}@media(max-width:540px){header{padding:16px}main{padding:0 12px;margin-top:5px}.card{padding:24px 19px;border-radius:19px}h2{font-size:21px}.option{padding:13px}.actions{gap:8px}.actions button{padding:11px 10px}header strong{font-size:14px}}
+</style></head>
+<body><header><strong>工作方式探索 / 01</strong><button id="clear">清除进度</button></header><div id="status" role="status" aria-live="polite"></div><main id="app"></main>
+<script>
+'use strict';
+const VALUES=[0,33,66,100],KEY='career-personality-local-v1';
+const questions=[
+['接到一项为期两周的新任务，你可以自己完成，也可以和同事共同推进。你更愿意怎样安排？',['自己集中完成，必要时再请教别人。','主要自己做，在几个关键节点交流。','和同事分工，每隔一两天同步进展。','保持频繁讨论，在共同推进中形成思路。']],
+['开始一项新工作时，哪种任务说明最让你安心？',['只说明目标，方法和时间安排由我决定。','给出目标和期限，其余大多由我安排。','给出阶段目标、参考流程和检查节点。','明确步骤、优先级和验收标准。']],
+['两项任务的待遇、难度和工作量相近，你更倾向哪一种？',['内容熟悉，能沿用成熟的方法。','以熟悉内容为主，加入少量新内容。','有较多新内容，但仍有经验可以借鉴。','大部分内容是新的，需要探索方法。']],
+['团队要在两个可行方案中选一个：一个更受成员欢迎，另一个在已有数据中表现更好。你通常先做什么？',['先了解大家为什么更愿意接受前一个方案。','先看成员的实际处境，再结合数据判断。','先比较数据，再检查大家能否接受和执行。','先核对数据和比较标准，再讨论成员意见。']],
+['你要在一周内交付一份方案，目前已能表达主要想法，但细节还不完整。你更习惯怎样推进？',['先把主要细节想清楚，再给别人看。','完成较完整的初稿后，再征求反馈。','先分享可讨论的版本，边反馈边补充。','尽快做一个小范围可用的版本，试用后调整。']],
+['安排一个工作日时，假设任务需要和时间总量相同，你更喜欢哪种日程？',['大部分时间连续独立工作，交流集中处理。','以独立工作为主，安排一两次短交流。','独立工作和讨论交替进行。','多次短交流穿插其中，随时碰撞思路。']],
+['同时收到三项同样重要、截止日期相近的任务，你更希望工作安排具备什么？',['允许我随进展灵活切换，不必固定顺序。','有大致方向，但每天的顺序由我调整。','事先确定优先级，并设置阶段检查。','明确每天的安排、交付节点和完成标准。']],
+['你可以长期负责一个熟悉的业务，也可以定期轮换到新项目，两者发展机会相近。你更愿意选择？',['长期深耕同一业务，持续积累。','保持主要业务稳定，偶尔参与新项目。','定期参与不同项目，保留部分熟悉工作。','经常切换项目，在新情境中学习和探索。']],
+['用户反馈“这个流程让人不舒服”，但现有指标没有明显异常。你准备提出改进建议，通常从哪里开始？',['先听具体经历，理解他们的不适来自哪里。','先梳理用户处境，再找数据确认影响范围。','先检查流程指标，再访谈用户补充解释。','先建立可比较的指标或测试，再判断如何改进。']],
+['你想改进一个内部流程，已有一个可撤回、成本很低的新办法。你更习惯怎样做？',['先充分梳理可能的问题，再决定是否尝试。','先完善方案，请相关人员看过后再试。','先在一个小环节试行，根据反馈调整。','尽快进行短期试行，通过实际运行发现问题。']]
+];
+const dimensions=[
+['协作方式','独立专注','高频互动',[
+'你可能更喜欢连续、少打断的独立工作。探索岗位时，可关注独立产出时间和会议频率。',
+'你可能需要独立思考与协作交流相结合。可关注团队是否允许按任务调整交流节奏。',
+'你可能更喜欢通过讨论、反馈和共同推进形成思路。可关注岗位的沟通与协作比例。']],
+['工作结构','灵活自主','明确有序',[
+'你可能更喜欢自行选择方法和安排顺序。可关注岗位给予的自主空间。',
+'你可能希望目标清楚，同时保留执行弹性。可关注规则与自主权是否平衡。',
+'你可能更喜欢清楚的流程、优先级和验收标准。可关注职责、培训和工作安排是否明确。']],
+['变化偏好','稳定熟悉','探索变化',[
+'你可能更喜欢在熟悉领域持续积累。可关注工作内容的稳定性和深耕机会。',
+'你可能希望有稳定基础，同时接触适量新任务。可关注新旧任务的比例。',
+'你可能更喜欢新项目和探索过程。可关注变化频率、学习机会与试错支持。']],
+['决策依据','人的感受与情境','数据与逻辑',[
+'你可能习惯先理解人的体验和具体处境。可关注工作是否需要访谈、沟通和情境判断。',
+'你可能会结合人的体验与数据证据判断。可关注工作是否允许同时使用这两类信息。',
+'你可能习惯先用数据、规则和逻辑比较方案。可关注分析任务和证据的可获得性。']],
+['推进节奏','审慎打磨','快速试行',[
+'你可能更喜欢充分准备、打磨后再交付。可关注是否有合理的准备时间和质量要求。',
+'你可能会根据成本和风险选择先打磨还是先试行。可关注工作节奏是否允许调整。',
+'你可能更喜欢尽早尝试，通过反馈迭代。可关注是否支持小范围试行和及时反馈。']]
+];
+const app=document.getElementById('app'),status=document.getElementById('status');
+let answers=Array(10).fill(null),started=false,page=0,storageOK=true;
+function message(s){status.textContent=s}
+function firstUnanswered(){return answers.findIndex(v=>v===null)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({started,answers}))}catch(e){storageOK=false;message('浏览器未允许保存进度；本次仍可作答，刷新可能丢失答案。')}}
+function restore(){try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&Array.isArray(s.answers)&&s.answers.length===10&&s.answers.every(v=>v===null||VALUES.includes(v))){answers=s.answers;started=!!s.started||answers.some(v=>v!==null)}}}catch(e){message('无法读取保存的进度，本次将从头开始。')}page=firstUnanswered();if(page===-1)page=10}
+function band(score){return score<40?0:score<=60?1:2}
+function scores(){return dimensions.map((_,i)=>(answers[i]+answers[i+5])/2)}
+function focusHeading(){const h=app.querySelector('h1,h2');if(h){h.tabIndex=-1;h.focus()}}
+function render(focus=false){if(!started){cover()}else if(firstUnanswered()===-1&&page===10){result()}else{if(page<0||page>9)page=Math.max(0,firstUnanswered());question()}if(focus)focusHeading()}
+function cover(){app.innerHTML=`<section class="card"><div class="eyebrow">CAREER PERSONALITY / 职业人格测试</div><h1>先了解自己，<br>再探索工作方向。</h1><p class="muted">不必立刻找到唯一的答案。从具体场景出发，看看什么样的工作安排，可能让你更自在。</p><div class="pills"><span>10 道场景题</span><span>约 3–5 分钟</span><span>5 个工作偏好维度</span></div><div class="note">按最近半年通常的感受选择，不必选“看起来更优秀”的答案。分数代表偏好，不代表能力或优劣。本测试为自我探索工具，未经过专业量表验证。</div><button class="primary" id="start">开始探索 →</button><p class="muted" style="font-size:13px">答案仅尝试保存在当前浏览器，不上传。可随时清除进度。</p></section>`;document.getElementById('start').onclick=()=>{started=true;page=Math.max(0,firstUnanswered());save();render(true)}}
+function question(){const q=questions[page];app.innerHTML=`<section class="card"><div class="progress-head"><span>第 ${page+1} / 10 题</span><span>已回答 ${answers.filter(v=>v!==null).length} 题</span></div><progress max="10" value="${answers.filter(v=>v!==null).length}" aria-label="已回答题数"></progress><h2>${q[0]}</h2><p class="muted" style="font-size:14px">选择最接近你的做法。选中后点击下一题，也可以返回修改。</p><div class="options">${q[1].map((text,i)=>`<button class="option" data-value="${VALUES[i]}" aria-pressed="${answers[page]===VALUES[i]}"><span class="letter">${'ABCD'[i]}</span><span>${text}</span></button>`).join('')}</div><div class="actions"><button id="prev" ${page===0?'disabled':''}>← 上一题</button><button id="next" class="primary" ${answers[page]===null?'disabled':''}>${page===9?'查看结果':'下一题 →'}</button></div></section><footer>没有标准答案，每种工作偏好都有适合的环境。</footer>`;
+app.querySelectorAll('[data-value]').forEach(b=>b.onclick=()=>{answers[page]=Number(b.dataset.value);save();app.querySelectorAll('[data-value]').forEach(x=>x.setAttribute('aria-pressed',String(Number(x.dataset.value)===answers[page])));document.getElementById('next').disabled=false});
+document.getElementById('prev').onclick=()=>{if(page>0){page--;render(true)}};
+document.getElementById('next').onclick=()=>{if(answers[page]===null)return;if(page<9)page++;else page=firstUnanswered()===-1?10:firstUnanswered();render(true)}}
+const disclaimer='这是自我探索工具，未经过专业量表验证；分数代表偏好，不代表工作能力。工作偏好会随经历和环境变化，同一职业的不同团队，工作方式也可能差异很大。';
+function resultText(){return '职业人格测试｜我的工作方式偏好\n\n'+scores().map((s,i)=>{const d=dimensions[i],b=band(s);return `${d[0]}：${s.toFixed(1)} / 100（${b===0?'偏向'+d[1]:b===2?'偏向'+d[2]:'兼顾两侧'}）\n${d[3][b]}`}).join('\n\n')+'\n\n'+disclaimer+'\n每个维度为对应两题的平均分，不计算总分。'}
+function result(){app.innerHTML=`<section class="card"><div class="eyebrow">YOUR WORK STYLE / 探索结果</div><h1>你的工作方式偏好</h1><p class="muted">把结果当作探索线索。你不需要被一个人格标签定义。</p>${scores().map((s,i)=>{const d=dimensions[i],b=band(s);return `<div class="result"><div class="result-top"><h3>${d[0]}</h3><span class="score">${s.toFixed(1)}<small style="font-size:12px;font-weight:400"> / 100</small></span></div><div class="track" role="meter" aria-label="${d[0]}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${s}"><div class="fill" style="width:${s}%"></div></div><div class="ends"><span>${d[1]}</span><span>${d[2]}</span></div><p><span class="badge">${b===0?'偏向'+d[1]:b===2?'偏向'+d[2]:'兼顾两侧'}</span><br>${d[3][b]}</p></div>`}).join('')}<div class="note">${disclaimer}<br><br>可以把结果用于筛选岗位环境、准备面试问题，再通过实际体验验证。每个维度为两题平均分；低于 40 偏向左侧，40–60 兼顾两侧，高于 60 偏向右侧。不计算总分。</div><div class="actions"><button id="copy" class="primary">复制结果</button><button id="edit">修改答案</button><button id="restart">重新测试</button></div><div id="copyFallback" hidden><p>浏览器未允许自动复制。请在下面长按或全选后复制：</p><textarea id="copyText" readonly aria-label="可手动复制的测试结果"></textarea></div></section>`;document.getElementById('copy').onclick=copyResult;document.getElementById('edit').onclick=()=>{page=0;render(true)};document.getElementById('restart').onclick=()=>reset(true)}
+async function copyResult(){const text=resultText();let copied=false;try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(text);copied=true}}catch(e){}if(!copied){const field=document.getElementById('copyText');document.getElementById('copyFallback').hidden=false;field.value=text;field.focus();field.select();try{copied=document.execCommand('copy')}catch(e){}if(copied)document.getElementById('copyFallback').hidden=true}message(copied?'结果已复制，可粘贴保存。':'请手动复制下方结果文本。')}
+function reset(start){if(!window.confirm(start?'重新测试将清除当前答案，是否继续？':'清除本测试保存的全部答案和进度，是否继续？'))return;try{localStorage.removeItem(KEY)}catch(e){storageOK=false}answers=Array(10).fill(null);started=start;page=0;if(start)save();message(storageOK?(start?'已开始新的测试。':'本测试的进度已清除。'):'当前答案已清空；浏览器存储不可用，无法确认旧进度已清除。');render(true)}
+document.getElementById('clear').onclick=()=>reset(false);restore();render();
+</script></body></html>
